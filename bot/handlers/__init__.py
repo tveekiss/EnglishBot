@@ -11,3 +11,5 @@ def register_user_handlers(router: Router):
     # Регистрация пользователя
     router.message.register(start_register, F.text == 'Начать')
     router.message.register(register_name, Register.username)
+
+    # Callbacks
