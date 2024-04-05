@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "englishbot"
+version = "0.1.0"
+description = ""
+authors = ["tveekiss <egor.shiryaev@icloud.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "^3.4.1"
+environs = "^11.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
