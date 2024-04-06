@@ -33,11 +33,15 @@ class Words:
 
     def random_word(self):
         eng_res, rus_res = random.choice(list(self.words.items()))
+        answers = self.random_answers(rus_res)
+        return eng_res, rus_res, answers
+
+    def random_answers(self, rus):
         answers = random.choices(list(self.words.values()), k=3)
-        if rus_res not in answers:
-            answers.append(rus_res)
-            return eng_res, rus_res, answers
-        self.random_word()
+        if rus not in answers:
+            answers.append(rus)
+            return answers
+        self.random_answers(rus)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,9 @@
+import random
 import sqlite3
 import os
 
 from bot.database.register import Users
+
 
 
 class WordsDb:
@@ -18,24 +20,37 @@ class WordsDb:
                 difficult TEXT NOT NULL,
                 eng TEXT NOT NULL,
                 rus TEXT NOT NULL,
-                mistakes INTEGER DEFAULT 0);
+                repeat INTEGER DEFAULT 0);
             """
             self.cursor.execute(query)
             self.conn.commit()
         except sqlite3.Error as Error:
             print('Ошибка при создании', Error)
 
-    def insert_word(self, difficulty, word, rus, mistakes=0):
-        self.cursor.execute(f"""INSERT INTO words_{self.user_id} VALUES (?, ?, ?, ?)""", (difficulty, word, rus, mistakes))
+    def insert_word(self, difficulty, word, rus, repeat):
+        self.cursor.execute(f"""INSERT INTO words_{self.user_id} VALUES (?, ?, ?, ?)""", (difficulty, word, rus, repeat))
         self.conn.commit()
 
-    def check_word(self, difficulty, word):
-        word = self.cursor.execute("SELECT * FROM words_{self.user_id}"
-                                   " WHERE difficulty = ? AND word = ?", (difficulty, word))
-        return word.fetchone() is not None
+    def check_repeat(self, difficulty, word):
+        check = self.cursor.execute("SELECT * FROM words_{self.user_id} WHERE eng = ?", (word,))
+        return check.fetchone() is not None
+
+    def get_repeat_list(self):
+        words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat > 0")
+        return words.fetchall()
+
+    def update_repeat(self, eng, rus):
+        self.cursor.execute(f"UPDATE words_{self.user_id} SET repeat = repeat - 1 WHERE eng =? AND rus =?", (eng, rus))
+        self.conn.commit()
 
     def __del__(self):
-        count = len(self.cursor.execute(f'SELECT * FROM words_{self.user_id} WHERE mistakes = 0;').fetchall())
+        count = len(self.cursor.execute(f'SELECT * FROM words_{self.user_id} WHERE repeat = 0;').fetchall())
         user = Users().update_words(self.user_id, count)
+        self.conn.commit()
         self.cursor.close()
         self.conn.close()
+
+
+if __name__ == '__main__':
+    db = WordsDb(1778058617)
+    print(db.get_repeat_list())

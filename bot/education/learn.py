@@ -42,7 +42,6 @@ C2 (Proficiency) — самый высокий, уровень носителя.
 
 
 async def learning(message: Message, state: FSMContext):
-    print(10)
     await message.answer('Отличный выбор! Теперь я буду давать тебе слова на английском языке,'
                          ' а ты будешь пытаться их переводить')
     await state.update_data(level=message.text)
@@ -66,7 +65,7 @@ async def testing(message: Message, state: FSMContext):
 
 
 async def result(message: Message, state: FSMContext):
-    mistake = 0
+    repeat = 1
     context_data = await state.get_data()
     rus = context_data.get('rus')
     if message.text == 'Закончить':
@@ -78,11 +77,11 @@ async def result(message: Message, state: FSMContext):
     else:
         await message.answer(f"Неправильно. Правильный ответ - {rus}. \n"
                              f"Запишу на повторение")
-        mistake += 1
+        repeat = 2
 
     db: WordsDb = context_data.get('db')
     level = context_data.get('level')
     eng = context_data.get('eng')
-    db.insert_word(level, eng, rus, mistake)
+    db.insert_word(level, eng, rus, repeat)
     await testing(message, state)
 

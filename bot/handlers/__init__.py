@@ -6,6 +6,7 @@ from aiogram import F
 
 from bot.handlers.register import start_register, register_name, Register
 from bot.education.learn import starting
+from bot.education.repeat import repeat
 
 
 def register_user_handlers(router: Router):
@@ -15,3 +16,4 @@ def register_user_handlers(router: Router):
 
     # Выбор действия
     router.message.register(starting, F.text == 'Учить слова')
+    router.message.register(repeat, F.text == 'Повторить')
