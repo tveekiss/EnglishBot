@@ -10,8 +10,11 @@ class Register(StatesGroup):
 
 
 async def start_register(message: Message, state: FSMContext):
-    await message.answer('Привет. Вижу ты тут первый раз. Введи имя для того что бы я знал как к тебе обращаться')
-    await state.set_state(Register.username)
+    db = Users()
+    user = db.check_user(message.from_user.id)
+    if not user:
+        await message.answer('Привет. Вижу ты тут первый раз. Введи имя для того что бы я знал как к тебе обращаться')
+        await state.set_state(Register.username)
 
 
 async def register_name(message: Message, state: FSMContext):

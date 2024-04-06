@@ -29,9 +29,9 @@ class Users:
         user = self.cursor.execute('SELECT * FROM users WHERE id = ?', (telegram_id,))
         return user.fetchone()
 
-    def get_user(self, telegram_id):
-        user = self.cursor.execute('SELECT * FROM users WHERE id = ?', (telegram_id,))
-        return user
+    def update_words(self, telegram_id, word_count):
+        self.cursor.execute('UPDATE users SET word_count = ? WHERE id = ?', (word_count, telegram_id))
+        self.conn.commit()
 
     def __del__(self):
         self.cursor.close()

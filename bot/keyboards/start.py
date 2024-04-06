@@ -6,7 +6,7 @@ start_keyboard = ReplyKeyboardMarkup(keyboard=[
             text='Учить слова'
         ),
         KeyboardButton(
-            text='Переводчик'
+            text='Повторить'
         )
     ], [
         KeyboardButton(
