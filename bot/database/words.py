@@ -35,16 +35,18 @@ class WordsDb:
                             (difficulty, word, rus, repeat, datetime.date.today()))
         self.conn.commit()
 
-    def check_repeat(self, difficulty, word):
-        check = self.cursor.execute("SELECT * FROM words_{self.user_id} WHERE eng = ?", (word,))
-        return check.fetchone() is not None
+    def check_word(self, eng, rus):
+        self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE eng = ? AND rus = ?", (eng, rus))
+        result = self.cursor.fetchone()
+        return result is not None
 
     def get_repeat_list(self):
         words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat > 0")
         return words.fetchall()
 
-    def update_repeat(self, eng, rus):
-        self.cursor.execute(f"UPDATE words_{self.user_id} SET repeat = repeat - 1 WHERE eng =? AND rus =?", (eng, rus))
+    def update_repeat(self, eng, rus, result):
+        self.cursor.execute(f"UPDATE words_{self.user_id} SET repeat = repeat + ? WHERE eng =? AND rus =?",
+                            (result, eng, rus))
         self.conn.commit()
 
     def __del__(self):

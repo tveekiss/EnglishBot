@@ -35,7 +35,7 @@ async def repeat(message: Message, state: FSMContext):
         if value == max_difficult:
             level = key
             break
-    db_words = Words(level)
+    db_words = Words(level, message.from_user.id)
 
     await state.update_data(words=words, user_words=user_words, db_words=db_words)
     await start_repeat(message, state)
@@ -84,7 +84,7 @@ async def resut_repeat(message: Message, state: FSMContext):
             words[i] = updated_word  # Заменяем старый кортеж на новый в списке
             break
     db: WordsDb = context_data.get('user_words')
-    db.update_repeat(eng, rus)
+    db.update_repeat(eng, rus, result)
     await start_repeat(message, state)
 
 

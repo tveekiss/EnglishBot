@@ -46,7 +46,7 @@ async def learning(message: Message, state: FSMContext):
                          ' а ты будешь пытаться их переводить')
     await state.update_data(level=message.text)
     db = WordsDb(message.from_user.id)
-    words = Words(message.text)
+    words = Words(message.text, message.from_user.id)
     await state.update_data(words=words, db=db)
     eng, rus, answers = words.random_word()
     await state.update_data(rus=rus, eng=eng)
@@ -56,7 +56,7 @@ async def learning(message: Message, state: FSMContext):
 async def testing(message: Message, state: FSMContext):
     context_data = await state.get_data()
     level = context_data.get('level')
-    cl_words = context_data.get('words')
+    cl_words: WordsDb = context_data.get('words')
     eng, rus, answers = cl_words.random_word()
     await state.update_data(rus=rus, eng=eng)
     kb = create_kb(answers)
