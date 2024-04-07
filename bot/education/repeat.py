@@ -18,6 +18,10 @@ async def repeat(message: Message, state: FSMContext):
     await message.answer('Хорошо, давай повторим слова')
     user_words = WordsDb(message.from_user.id)
     words = user_words.get_repeat_list()
+    print(words)
+    if len(words) == 0:
+        await message.answer('Нету слов на повторение', reply_markup=start_keyboard)
+        return
     await message.answer(f'Количество слов на повторение: {len(words)}')
     difficult = {}
     for word in words:

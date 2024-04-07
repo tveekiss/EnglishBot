@@ -1,8 +1,10 @@
 import random
 import sqlite3
 import os
+import datetime
 
 from bot.database.register import Users
+from bot.keyboards.WordsLevel import levels
 
 
 
@@ -20,7 +22,8 @@ class WordsDb:
                 difficult TEXT NOT NULL,
                 eng TEXT NOT NULL,
                 rus TEXT NOT NULL,
-                repeat INTEGER DEFAULT 0);
+                repeat INTEGER DEFAULT 0,
+                datetime TIMESTAMP);
             """
             self.cursor.execute(query)
             self.conn.commit()
@@ -28,7 +31,8 @@ class WordsDb:
             print('Ошибка при создании', Error)
 
     def insert_word(self, difficulty, word, rus, repeat):
-        self.cursor.execute(f"""INSERT INTO words_{self.user_id} VALUES (?, ?, ?, ?)""", (difficulty, word, rus, repeat))
+        self.cursor.execute(f"""INSERT INTO words_{self.user_id} VALUES (?, ?, ?, ?, ?)""",
+                            (difficulty, word, rus, repeat, datetime.date.today()))
         self.conn.commit()
 
     def check_repeat(self, difficulty, word):
@@ -49,6 +53,28 @@ class WordsDb:
         self.conn.commit()
         self.cursor.close()
         self.conn.close()
+
+    def get_stat(self):
+        self.cursor.execute(f'SELECT difficult, datetime FROM words_{self.user_id} WHERE repeat = 0;')
+        all_learn_words = self.cursor.fetchall()
+        today = 0
+        for word in all_learn_words:
+            if word[1] == str(datetime.datetime.today().date()):
+                today += 1
+
+        levels_stat = {}
+
+        for word in all_learn_words:
+            word = word[0]
+            if word in levels_stat.keys():
+                levels_stat[word] += 1
+            else:
+                levels_stat[word] = 1
+        text = f"Статистика\nСлов за все время: {len(all_learn_words)}\n"
+        text += 'Количество слов в каждом уровне:\n'
+        text += ''.join([f'{k}: {v}\n' for k, v in levels_stat.items()])
+        text += f'За сегодня: {today}'
+        return text
 
 
 if __name__ == '__main__':
