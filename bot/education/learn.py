@@ -18,6 +18,11 @@ class Test(StatesGroup):
 
 
 async def starting(message: Message, state: FSMContext):
+    db = WordsDb(message.from_user.id)
+    if len(db.get_repeat_list()) >= 15:
+        await message.answer('У вас накопилось много слов на повторение,'
+                             ' закрепите материал', reply_markup=start_keyboard)
+        return
     await message.answer('Хорошо, я буду отправлять тебе слова на английском языке,'
                          ' а ты должен(а) будешь выбрать правильный вариант снизу, вот так все просто!'
                          ' Слова, в которых ты допустишь ошибку, я добавлю в повторение, '
@@ -58,12 +63,16 @@ async def testing(message: Message, state: FSMContext):
     level = context_data.get('level')
     cl_words: Words = context_data.get('words')
     user_words: WordsDb = context_data.get('db')
+    if len(user_words.get_repeat_list()) >= 15:
+        await message.answer('У вас накопилось много слов на повторение,'
+                             ' закрепите материал', reply_markup=start_keyboard)
+        return
     eng, rus, answers = cl_words.random_word()
     if user_words.check_word(eng, rus):
         await testing(message, state)
         return
     await state.update_data(rus=rus, eng=eng, answers=answers)
-    kb = create_kb(answers, False)
+    kb = create_kb(answers, 0)
     await message.answer(f'Как переводится слово: {eng}?', reply_markup=kb)
     await state.set_state(Test.answer)
 

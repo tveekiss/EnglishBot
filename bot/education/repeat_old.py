@@ -58,7 +58,7 @@ async def start_repeat_old(message: Message, state: FSMContext):
     db = context_data.get('db_words')
     answers = db.random_answers(rus)
     await state.update_data(rus=rus, eng=eng, answers=answers)
-    kb = create_kb(answers)
+    kb = create_kb(answers, 2)
     await message.answer(f'Как переводится слово {eng}?', reply_markup=kb)
     await state.set_state(RepeatOld.answer)
 

@@ -28,6 +28,6 @@ def register_user_handlers(router: Router):
     router.message.register(old_statistics, F.text == 'Посмотреть базу выученных слов')
     # Выбор повтора
     router.message.register(repeat_old, F.text == 'Повторить старые слова')
-    router.message.register(repeat, F.text == 'Повторить новые слова')
+    router.message.register(repeat, F.text == 'Закрепить новые слова')
     # Вернуться на главную страницу
     router.message.register(start_command, F.text == 'Назад')

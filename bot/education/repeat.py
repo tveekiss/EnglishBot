@@ -20,7 +20,8 @@ async def repeat(message: Message, state: FSMContext):
     if len(words) == 0:
         await message.answer('Нету новых слов на повторение')
         return
-    await message.answer('Хорошо, давай повторим слова')
+    await message.answer('Я буду давать тебе слова которые ты недавно выучил(а)\n'
+                         'А ты будешь их закреплять')
     await message.answer(f'Количество слов на повторение: {len(words)}')
     difficult = {}
     for word in words:
@@ -57,14 +58,14 @@ async def start_repeat(message: Message, state: FSMContext):
         answers = db.random_answers(rus)
         await state.update_data(rus=rus, eng=eng, answers=answers)
 
-        kb = create_kb(answers)
+        kb = create_kb(answers, 1)
         await message.answer(f'Как переводится слово {eng}?', reply_markup=kb)
         await state.set_state(Repeat.answer)
 
 
 async def resut_repeat(message: Message, state: FSMContext):
-    if message.text == 'Закончить повторение':
-        await message.answer('Заканчиваем повторение', reply_markup=start_keyboard)
+    if message.text == 'Закончить закрепление':
+        await message.answer('Закрепили материал', reply_markup=start_keyboard)
         await state.clear()
         return
     context_data = await state.get_data()

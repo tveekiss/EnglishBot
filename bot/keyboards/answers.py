@@ -2,7 +2,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import random
 
 
-def create_kb(answers, repeat=True) -> ReplyKeyboardMarkup:
+def create_kb(answers, end) -> ReplyKeyboardMarkup:
+    ends = ['обучение', 'закрепление', 'повторение']
     random.shuffle(answers)
     kb = ReplyKeyboardMarkup(keyboard=[
         [
@@ -21,7 +22,7 @@ def create_kb(answers, repeat=True) -> ReplyKeyboardMarkup:
             )
         ], [
             KeyboardButton(
-                text=f'Закончить ' + ('повторение' if repeat else 'обучение')
+                text=f'Закончить ' + (ends[end])
             )
         ]
     ], resize_keyboard=True)
