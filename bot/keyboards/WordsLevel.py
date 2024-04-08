@@ -22,6 +22,10 @@ level_kb = ReplyKeyboardMarkup(keyboard=[
         KeyboardButton(
             text='c2'
         )
+    ], [
+        KeyboardButton(
+            text='Назад'
+        )
     ]
-], resize_keyboard=True, one_time_keyboard=True)
+], resize_keyboard=True)
 levels = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2']

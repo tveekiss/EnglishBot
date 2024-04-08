@@ -56,10 +56,14 @@ async def learning(message: Message, state: FSMContext):
 async def testing(message: Message, state: FSMContext):
     context_data = await state.get_data()
     level = context_data.get('level')
-    cl_words: WordsDb = context_data.get('words')
+    cl_words: Words = context_data.get('words')
+    user_words: WordsDb = context_data.get('db')
     eng, rus, answers = cl_words.random_word()
-    await state.update_data(rus=rus, eng=eng)
-    kb = create_kb(answers)
+    if user_words.check_word(eng, rus):
+        await testing(message, state)
+        return
+    await state.update_data(rus=rus, eng=eng, answers=answers)
+    kb = create_kb(answers, False)
     await message.answer(f'Как переводится слово: {eng}?', reply_markup=kb)
     await state.set_state(Test.answer)
 
@@ -68,16 +72,21 @@ async def result(message: Message, state: FSMContext):
     repeat = 1
     context_data = await state.get_data()
     rus = context_data.get('rus')
-    if message.text == 'Закончить':
+    answers = context_data.get('answers')
+    if message.text == 'Закончить обучение':
         await state.clear()
         await message.answer('Заканчиваю. Не хотите повторить слова?', reply_markup=start_keyboard)
         return
-    elif message.text == rus:
+    if message.text == rus:
         await message.answer('Правильный ответ')
-    else:
+    elif message.text in answers:
         await message.answer(f"Неправильно. Правильный ответ - {rus}. \n"
                              f"Запишу на повторение")
         repeat = 2
+    else:
+        await message.answer('Нет такого варианта ответа!')
+        await state.set_state(Test.answer)
+        return
 
     db: WordsDb = context_data.get('db')
     level = context_data.get('level')

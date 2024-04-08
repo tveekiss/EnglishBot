@@ -13,4 +13,4 @@ start_keyboard = ReplyKeyboardMarkup(keyboard=[
             text='Статистика'
         )
     ]
-], resize_keyboard=True, one_time_keyboard=True)
+], resize_keyboard=True)

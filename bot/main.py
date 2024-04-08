@@ -7,9 +7,9 @@ from commands import register_user_commands, commands_list
 from handlers import register_user_handlers
 from education import register_education_handler
 
+
 dp = Dispatcher()
 bot = Bot(token=os.getenv('token'))
-
 
 async def main():
     logging.basicConfig(level=logging.DEBUG)

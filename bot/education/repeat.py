@@ -15,13 +15,12 @@ class Repeat(StatesGroup):
 
 
 async def repeat(message: Message, state: FSMContext):
-    await message.answer('Хорошо, давай повторим слова')
     user_words = WordsDb(message.from_user.id)
     words = user_words.get_repeat_list()
-    print(words)
     if len(words) == 0:
-        await message.answer('Нету слов на повторение', reply_markup=start_keyboard)
+        await message.answer('Нету новых слов на повторение')
         return
+    await message.answer('Хорошо, давай повторим слова')
     await message.answer(f'Количество слов на повторение: {len(words)}')
     difficult = {}
     for word in words:
@@ -46,7 +45,7 @@ async def start_repeat(message: Message, state: FSMContext):
     user_words = WordsDb(message.from_user.id)
     words = user_words.get_repeat_list()
     if all(word[3] == 0 for word in words):
-        await message.answer('Нету слов для повторения', reply_markup=start_keyboard)
+        await message.answer('Новые слова закончились', reply_markup=start_keyboard)
         await state.clear()
         return
     word = random.choice(words)
@@ -54,9 +53,9 @@ async def start_repeat(message: Message, state: FSMContext):
         await start_repeat(message, state)
     else:
         eng, rus = word[1], word[2]
-        db = context_data.get('db_words')
+        db: Words = context_data.get('db_words')
         answers = db.random_answers(rus)
-        await state.update_data(rus=rus, eng=eng)
+        await state.update_data(rus=rus, eng=eng, answers=answers)
 
         kb = create_kb(answers)
         await message.answer(f'Как переводится слово {eng}?', reply_markup=kb)
@@ -64,7 +63,7 @@ async def start_repeat(message: Message, state: FSMContext):
 
 
 async def resut_repeat(message: Message, state: FSMContext):
-    if message.text == 'Закончить':
+    if message.text == 'Закончить повторение':
         await message.answer('Заканчиваем повторение', reply_markup=start_keyboard)
         await state.clear()
         return
@@ -72,12 +71,17 @@ async def resut_repeat(message: Message, state: FSMContext):
     words = context_data.get('words')
     rus = context_data.get('rus')
     eng = context_data.get('eng')
+    answers = context_data.get('answers')
     if rus == message.text:
         await message.answer('Правильный ответ!')
         result = -1
-    else:
+    elif message.text in answers:
         await message.answer(f'Неправильно! Правильный ответ: {rus}')
         result = 1
+    else:
+        await message.answer('Нет такого варианта ответа')
+        await state.set_state(Repeat.answer)
+        return
     for i, word in enumerate(words):
         if word[1] == eng and word[2] == rus:
             updated_word = (word[0], word[1], word[2], word[3] + result)  # Создаем новый кортеж с обновленным значением

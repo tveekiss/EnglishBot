@@ -7,7 +7,6 @@ from bot.database.register import Users
 from bot.keyboards.WordsLevel import levels
 
 
-
 class WordsDb:
     def __init__(self, tg_id):
         self.user_id = tg_id
@@ -30,9 +29,15 @@ class WordsDb:
         except sqlite3.Error as Error:
             print('Ошибка при создании', Error)
 
+    @staticmethod
+    def get_good_date(date):
+        date = str(date)
+        good_date = date.split('-')
+        return f'{good_date[2]}.{good_date[1]}.{good_date[0]}'
+
     def insert_word(self, difficulty, word, rus, repeat):
         self.cursor.execute(f"""INSERT INTO words_{self.user_id} VALUES (?, ?, ?, ?, ?)""",
-                            (difficulty, word, rus, repeat, datetime.date.today()))
+                            (difficulty, word, rus, repeat, self.get_good_date(datetime.date.today())))
         self.conn.commit()
 
     def check_word(self, eng, rus):
@@ -42,6 +47,10 @@ class WordsDb:
 
     def get_repeat_list(self):
         words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat > 0")
+        return words.fetchall()
+
+    def get_repeat_old_list(self):
+        words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat = 0")
         return words.fetchall()
 
     def update_repeat(self, eng, rus, result):
@@ -60,21 +69,30 @@ class WordsDb:
         self.cursor.execute(f'SELECT difficult, datetime FROM words_{self.user_id} WHERE repeat = 0;')
         all_learn_words = self.cursor.fetchall()
         today = 0
+        mouth = 0
+        now = self.get_good_date(datetime.datetime.today().date())
         for word in all_learn_words:
-            if word[1] == str(datetime.datetime.today().date()):
+            if word[1] == now:
                 today += 1
+            date = word[1].split('.')
+            word_mouth = int(date[1])
+            word_year = int(date[2])
+            now_year = int(now.split('.')[2])
+            now_mount = int(now.split('.')[1])
+            if word_mouth == now_mount and now_year == word_year:
+                mouth += 1
 
         levels_stat = {}
-
         for word in all_learn_words:
-            word = word[0]
-            if word in levels_stat.keys():
-                levels_stat[word] += 1
+            difficult = word[0]
+            if difficult in levels_stat.keys():
+                levels_stat[difficult] += 1
             else:
-                levels_stat[word] = 1
+                levels_stat[difficult] = 1
         text = f"Статистика\nСлов за все время: {len(all_learn_words)}\n"
         text += 'Количество слов в каждом уровне:\n'
         text += ''.join([f'{k}: {v}\n' for k, v in levels_stat.items()])
+        text += f'За этот месяц: {mouth}\n'
         text += f'За сегодня: {today}'
         return text
 
