@@ -56,7 +56,7 @@ async def start_repeat(message: Message, state: FSMContext):
         eng, rus = word[1], word[2]
         db = context_data.get('db_words')
         answers = db.random_answers(rus)
-        await state.update_data(rus=rus, eng=eng)
+        await state.update_data(rus=rus, eng=eng, answers=answers)
 
         kb = create_kb(answers)
         await message.answer(f'Как переводится слово {eng}?', reply_markup=kb)
@@ -64,7 +64,7 @@ async def start_repeat(message: Message, state: FSMContext):
 
 
 async def resut_repeat(message: Message, state: FSMContext):
-    if message.text == 'Закончить':
+    if message.text == 'Закончить обучение':
         await message.answer('Заканчиваем повторение', reply_markup=start_keyboard)
         await state.clear()
         return
@@ -72,12 +72,16 @@ async def resut_repeat(message: Message, state: FSMContext):
     words = context_data.get('words')
     rus = context_data.get('rus')
     eng = context_data.get('eng')
+    answers = context_data.get('answers')
     if rus == message.text:
         await message.answer('Правильный ответ!')
         result = -1
-    else:
+    elif message.text in answers:
         await message.answer(f'Неправильно! Правильный ответ: {rus}')
         result = 1
+    else:
+        await message.answer('Нет такого варианта ответа')
+        await state.set_state(Repeat.answer)
     for i, word in enumerate(words):
         if word[1] == eng and word[2] == rus:
             updated_word = (word[0], word[1], word[2], word[3] + result)  # Создаем новый кортеж с обновленным значением

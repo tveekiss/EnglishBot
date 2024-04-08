@@ -21,8 +21,8 @@ def create_kb(answers) -> ReplyKeyboardMarkup:
             )
         ], [
             KeyboardButton(
-                text=f'Закончить'
+                text=f'Закончить обучение'
             )
         ]
-    ], resize_keyboard=True, one_time_keyboard=True)
+    ], resize_keyboard=True)
     return kb
