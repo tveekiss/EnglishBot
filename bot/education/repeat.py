@@ -70,6 +70,7 @@ async def resut_repeat(message: Message, state: FSMContext):
         return
     context_data = await state.get_data()
     words = context_data.get('words')
+    db: WordsDb = context_data.get('user_words')
     rus = context_data.get('rus')
     eng = context_data.get('eng')
     answers = context_data.get('answers')
@@ -87,8 +88,10 @@ async def resut_repeat(message: Message, state: FSMContext):
         if word[1] == eng and word[2] == rus:
             updated_word = (word[0], word[1], word[2], word[3] + result)  # Создаем новый кортеж с обновленным значением
             words[i] = updated_word  # Заменяем старый кортеж на новый в списке
+            if updated_word[3] == 0:
+                db.update_date(word[2], word[1])
             break
-    db: WordsDb = context_data.get('user_words')
+
     db.update_repeat(eng, rus, result)
     await start_repeat(message, state)
 

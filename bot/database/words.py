@@ -40,6 +40,10 @@ class WordsDb:
                             (difficulty, word, rus, repeat, self.get_good_date(datetime.date.today())))
         self.conn.commit()
 
+    def update_date(self, rus, eng):
+        self.cursor.execute(f'UPDATE words_{self.user_id} SET datetime = ? WHERE rus = ? AND eng = ?',
+                            (self.get_good_date(datetime.datetime.today().date()), rus, eng))
+
     def check_word(self, eng, rus):
         self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE eng = ? AND rus = ?", (eng, rus))
         result = self.cursor.fetchone()
@@ -59,8 +63,9 @@ class WordsDb:
         self.conn.commit()
 
     def __del__(self):
-        count = len(self.cursor.execute(f'SELECT * FROM words_{self.user_id} WHERE repeat = 0;').fetchall())
-        user = Users().update_words(self.user_id, count)
+        learn_word = self.cursor.execute(f'SELECT * FROM words_{self.user_id} WHERE repeat = 0;')
+        count_learn_words = len(learn_word.fetchall())
+        user = Users().update_words(self.user_id, count_learn_words)
         self.conn.commit()
         self.cursor.close()
         self.conn.close()
