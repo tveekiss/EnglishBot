@@ -27,7 +27,7 @@ class WordsDb:
             self.cursor.execute(query)
             self.conn.commit()
         except sqlite3.Error as Error:
-            print('Ошибка при создании', Error)
+            print('Ошибка при создании базы пользователя', Error)
 
     @staticmethod
     def get_good_date(date):
@@ -54,7 +54,7 @@ class WordsDb:
         return words.fetchall()
 
     def get_repeat_old_list(self):
-        words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat = 0")
+        words = self.cursor.execute(f"SELECT * FROM words_{self.user_id} WHERE repeat = 0 ORDER BY datetime DESC")
         return words.fetchall()
 
     def update_repeat(self, eng, rus, result):

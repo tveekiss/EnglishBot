@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="26fbd067-4322-41e6-a6d1-4f9a70df0f53" name="Changes" comment="">
+    <list default="true" id="26fbd067-4322-41e6-a6d1-4f9a70df0f53" name="Changes" comment="исправил баг с датой">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/5e09a5f6-974a-473d-9804-e6c6a01ed6f3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/5e09a5f6-974a-473d-9804-e6c6a01ed6f3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/75000a85-477b-4ca3-be0f-297242e1e280.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/75000a85-477b-4ca3-be0f-297242e1e280.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/commands/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/commands/help.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/commands/help.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/commands/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/commands/start.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/database.db" beforeDir="false" afterPath="$PROJECT_DIR$/bot/database.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/database/words.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/database/words.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/education/repeat.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/education/repeat.py" afterDir="false" />
@@ -201,12 +204,27 @@
       <workItem from="1712605165383" duration="1214000" />
       <workItem from="1712607035081" duration="2318000" />
       <workItem from="1712663589849" duration="2080000" />
-      <workItem from="1712666802937" duration="3615000" />
+      <workItem from="1712666802937" duration="3661000" />
+      <workItem from="1712740057305" duration="9354000" />
+      <workItem from="1712770609851" duration="607000" />
     </task>
+    <task id="LOCAL-00001" summary="исправил баг с датой">
+      <option name="closed" value="true" />
+      <created>1712673308466</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712673308466</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="исправил баг с датой" />
+    <option name="LAST_COMMIT_MESSAGE" value="исправил баг с датой" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/EnglishBot$words.coverage" NAME="words Coverage Results" MODIFIED="1712414265427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot/database" />
@@ -214,6 +232,6 @@
     <SUITE FILE_PATH="coverage/EnglishBot$register.coverage" NAME="register Coverage Results" MODIFIED="1712383205686" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot/handlers" />
     <SUITE FILE_PATH="coverage/EnglishBot$main__1_.coverage" NAME="main Coverage Results" MODIFIED="1712428155902" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot" />
     <SUITE FILE_PATH="coverage/EnglishBot$classes.coverage" NAME="classes Coverage Results" MODIFIED="1712587496599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot/education" />
-    <SUITE FILE_PATH="coverage/EnglishBot$main.coverage" NAME="main Coverage Results" MODIFIED="1712672864643" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot" />
+    <SUITE FILE_PATH="coverage/EnglishBot$main.coverage" NAME="main Coverage Results" MODIFIED="1712770615108" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bot" />
   </component>
 </project>

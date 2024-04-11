@@ -9,7 +9,8 @@ async def start_command(message: Message):
     user = db.check_user(message.from_user.id)
     if user:
         await message.answer(
-            f'Привет {user[1]}! Выбери действие снизу!',
+            f'Привет {user[1]}! Выбери действие снизу!'
+            f'\n\nЧто бы узнать о том как пользоваться ботом введи: /help',
             reply_markup=start_keyboard
         )
     else:
