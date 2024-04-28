@@ -1,23 +1,15 @@
-__all__ = ['register_education_handler', 'starting', 'Words', 'statistics', 'repeat', 'old_statistics']
+__all__ = ['register_education_handlers', 'starting', 'repeat_new', 'repeat_old', 'statistic', 'old_statistics']
 
-from bot.education.classes import Words
-
-from bot.education.learn import Level, Test
-from bot.education.learn import starting, testing, learning, result
-
-from bot.education.repeat import resut_repeat, repeat
-from bot.education.repeat import Repeat
-
-from bot.education.repeat_old import RepeatOld, result_repeat_old, repeat_old
-
-from bot.education.statistics import statistics, old_statistics
-
+from bot.education.learn import starting, introduction, Test, result
 from aiogram import Router
+from bot.education.repeat import repeat_new, result_repeat, Repeat
+from bot.education.repeat_old import repeat_old, RepeatOld, result_old
+from bot.education.statistic import statistic, old_statistics
 
 
-def register_education_handler(router: Router):
-    router.message.register(learning, Level.level)
+def register_education_handlers(router: Router):
+    router.message.register(introduction, Test.level)
     router.message.register(result, Test.answer)
 
-    router.message.register(resut_repeat, Repeat.answer)
-    router.message.register(result_repeat_old, RepeatOld.answer)
+    router.message.register(result_repeat, Repeat.answer)
+    router.message.register(result_old, RepeatOld.answer)

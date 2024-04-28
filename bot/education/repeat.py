@@ -1,99 +1,63 @@
-import random
-
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
+from aiogram.enums import ParseMode
 
 from bot.keyboards import create_kb, start_keyboard
 
-from bot.database import WordsDb
-from bot.education import Words
+from bot.database import words
 
 
 class Repeat(StatesGroup):
     answer = State()
 
 
-async def repeat(message: Message, state: FSMContext):
-    user_words = WordsDb(message.from_user.id)
-    words = user_words.get_repeat_list()
-    if len(words) == 0:
-        await message.answer('Нету новых слов на повторение')
+async def repeat_new(message: Message, state: FSMContext):
+    if not await words.check_repeat(message.from_user.id):
+        await message.answer('Нету слов на повторение ️️🙁')
         return
-    await message.answer('Я буду давать тебе слова которые ты недавно выучил(а)\n'
-                         'А ты будешь их закреплять')
-    await message.answer(f'Количество слов на повторение: {len(words)}')
-    difficult = {}
-    for word in words:
-        if word[0] in difficult.keys():
-            difficult[word[0]] += 1
-        else:
-            difficult[word[0]] = 1
-    max_difficult = max(difficult.values())
-    level = None
-    for key, value in difficult.items():
-        if value == max_difficult:
-            level = key
-            break
-    db_words = Words(level, message.from_user.id)
-
-    await state.update_data(words=words, user_words=user_words, db_words=db_words)
-    await start_repeat(message, state)
+    await message.answer('📚✨ Привет! В разделе "Закрепление новых слов" ты можешь закрепить слова,'
+                         ' которые уже выучил. Если сделал ошибку, повтори слово дважды,'
+                         ' чтобы закрепить знание. Если все верно, достаточно одного повторения.'
+                         ' Учи и совершенствуйся! 🧠💪🏼')
+    await testing_repeat(message, state)
 
 
-async def start_repeat(message: Message, state: FSMContext):
-    context_data = await state.get_data()
-    user_words = WordsDb(message.from_user.id)
-    words = user_words.get_repeat_list()
-    if all(word[3] == 0 for word in words):
-        await message.answer('Новые слова закончились', reply_markup=start_keyboard)
+async def testing_repeat(message: Message, state: FSMContext):
+    word_id, answers = await words.repeat_word(message.from_user.id)
+    if word_id is None:
+        print('Нету слов')
+        await message.answer('🎉 Слова закончились 🎉\n\nВыбери действие снизу ⤵️', reply_markup=start_keyboard)
         await state.clear()
         return
-    word = random.choice(words)
-    if word[3] == 0:
-        await start_repeat(message, state)
-    else:
-        eng, rus = word[1], word[2]
-        repeat = word[3]
-        db: Words = context_data.get('db_words')
-        answers = db.random_answers(rus)
-        await state.update_data(rus=rus, eng=eng, answers=answers)
-
-        kb = create_kb(answers, 1)
-        await message.answer(f'Как переводится слово {eng}?\nПовторений: {repeat}', reply_markup=kb)
-        await state.set_state(Repeat.answer)
+    word = await words.get_word_by_id(word_id)
+    await message.answer(f'Как переводится слово <b>{word.eng}</b> ?', reply_markup=create_kb(answers, 1),
+                         parse_mode=ParseMode.HTML)
+    await state.update_data(word_id=word_id, answers=answers)
+    await state.set_state(Repeat.answer)
 
 
-async def resut_repeat(message: Message, state: FSMContext):
-    if message.text == 'Закончить закрепление':
-        await message.answer('Закрепили материал', reply_markup=start_keyboard)
+async def result_repeat(message: Message, state: FSMContext):
+    rep = 0
+    context_data = await state.get_data()
+    word_id = context_data['word_id']
+    answers = context_data['answers']
+    word = await words.get_word_by_id(word_id)
+    if message.text == '⏪ Закончить закрепление':
+        await message.answer('✨ Заканчиваю ✨', reply_markup=start_keyboard)
+        await message.answer('выбери действие снизу ⤵️')
         await state.clear()
         return
-    context_data = await state.get_data()
-    words = context_data.get('words')
-    db: WordsDb = context_data.get('user_words')
-    rus = context_data.get('rus')
-    eng = context_data.get('eng')
-    answers = context_data.get('answers')
-    if rus == message.text:
-        await message.answer('Правильный ответ!')
-        result = -1
+    if message.text == word.rus:
+        await message.answer('✅ Правильно ')
+        rep -= 1
     elif message.text in answers:
-        await message.answer(f'Неправильно! Правильный ответ: {rus}')
-        result = 1
+        await message.answer(f'❌ Неверно, правильный ответ: <b>{word.rus}</b> ', parse_mode=ParseMode.HTML)
+        rep += 1
     else:
-        await message.answer('Нет такого варианта ответа')
+        await message.answer('❗️ Нет такого варианта ответа')
         await state.set_state(Repeat.answer)
         return
-    for i, word in enumerate(words):
-        if word[1] == eng and word[2] == rus:
-            updated_word = (word[0], word[1], word[2], word[3] + result)  # Создаем новый кортеж с обновленным значением
-            words[i] = updated_word  # Заменяем старый кортеж на новый в списке
-            if updated_word[3] == 0:
-                db.update_date(word[2], word[1])
-            break
 
-    db.update_repeat(eng, rus, result)
-    await start_repeat(message, state)
-
-
+    await words.edit_repeat(message.from_user.id, word_id, rep)
+    await testing_repeat(message, state)

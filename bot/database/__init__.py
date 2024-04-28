@@ -1,4 +1,4 @@
-__all__ = ['Users', 'WordsDb']
+__all__ = ['Users', 'Words', 'UserWords', 'users', 'words', 'async_session']
 
-from bot.database.register import Users
-from bot.database.words import WordsDb
+from bot.database.db import Users, Words, UserWords, async_session
+from bot.database import users, words

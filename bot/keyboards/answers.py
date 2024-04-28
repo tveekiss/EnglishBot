@@ -22,7 +22,7 @@ def create_kb(answers, end) -> ReplyKeyboardMarkup:
             )
         ], [
             KeyboardButton(
-                text=f'Закончить ' + (ends[end])
+                text=f'⏪ Закончить ' + (ends[end])
             )
         ]
     ], resize_keyboard=True)

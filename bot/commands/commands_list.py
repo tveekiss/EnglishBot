@@ -10,6 +10,14 @@ async def set_commands_list(bot):
         BotCommand(
             command='help',
             description='Помощь в работе с ботом'
+        ),
+        BotCommand(
+            command='username',
+            description='Изменить имя пользователя'
+        ),
+        BotCommand(
+            command='feedback',
+            description='Отправить пожелание или сообщение об ошибке'
         )
     ]
 

@@ -1,8 +1,10 @@
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from bot.keyboards import start_keyboard
-from bot.database import Users
+from bot.database import users
+from aiogram.types import ReplyKeyboardRemove
+from aiogram.enums import ParseMode
 
 
 class Register(StatesGroup):
@@ -10,21 +12,26 @@ class Register(StatesGroup):
 
 
 async def start_register(message: Message, state: FSMContext):
-    db = Users()
-    user = db.check_user(message.from_user.id)
+    user = await users.get_user_by_id(message.from_user.id)
     if not user:
-        await message.answer('Привет. Вижу ты тут первый раз. Введи имя для того что бы я знал как к тебе обращаться')
+        await message.answer(
+            f'Привет! Рад видеть тебя здесь впервые! 😊'
+            f'\n\nДавай знакомиться! Назови мне свое имя, чтобы я знал, как к тебе обращаться. 🤖👋'
+            '\nИли используй имя твоего аккаунта Telegram 🪄',
+            reply_markup=ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Использовать имя из telegram 🪄')]],
+                                             resize_keyboard=True))
         await state.set_state(Register.username)
 
 
 async def register_name(message: Message, state: FSMContext):
-    await state.update_data(username=message.text)
-    username_data = await state.get_data()
-    username = username_data.get('username')
-    db = Users()
-    db.add_user(username, message.from_user.id)
+    if message.text == 'Использовать имя из telegram 🪄':
+        username = message.from_user.full_name
+    else:
+        username = message.text
+    await users.add_user(username=username, tg_id=message.from_user.id)
     await state.clear()
-    await message.answer(f'Приятно познакомиться {message.text}! Регистрация закончена и теперь выбери действие снизу',
-                         reply_markup=start_keyboard)
-
-
+    await message.answer(
+        f'Привет, <b>{username}</b>! 👋 Добро пожаловать в нашего бота!'
+        f'\n\n Чтобы узнать что я умею, введи: /help 🤖'
+        f'\n\n<b>P.S.</b> Так же ты можешь отправить пожелание или сообщение об ошибке по команде: /feedback 😊',
+        reply_markup=start_keyboard, parse_mode=ParseMode.HTML)

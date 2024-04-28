@@ -4,18 +4,23 @@ import asyncio
 import logging
 
 from commands import register_user_commands, commands_list
-from handlers import register_user_handlers
-from education import register_education_handler
-
+from bot.handlers import register_handlers
+from bot.education import register_education_handlers
+from bot.database.db import Base, engine
+from bot.middlewaries import RegisterCheckMiddleware
 
 dp = Dispatcher()
 bot = Bot(token=os.getenv('token'))
 
+
 async def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
+
+    dp.message.middleware(RegisterCheckMiddleware())
+
     register_user_commands(dp)
-    register_user_handlers(dp)
-    register_education_handler(dp)
+    register_handlers(dp)
+    register_education_handlers(dp)
     await commands_list.set_commands_list(bot)
 
     await dp.start_polling(bot)

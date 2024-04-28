@@ -1,18 +1,14 @@
 from aiogram.types import Message
 from bot.keyboards import start_keyboard
-from bot.database import Users
-from bot.keyboards import first_button
+from bot.database import users
+from bot.handlers import start_register
+from aiogram.fsm.context import FSMContext
+from aiogram.enums import ParseMode
 
 
-async def start_command(message: Message):
-    db = Users()
-    user = db.check_user(message.from_user.id)
-    if user:
-        await message.answer(
-            f'Привет {user[1]}! Выбери действие снизу!'
-            f'\n\nЧто бы узнать о том как пользоваться ботом введи: /help',
-            reply_markup=start_keyboard
-        )
-    else:
-        await message.answer('Привет! Этот бот сделан для изучение английских слов!'
-                             ' Нажми кнопку ниже что бы начать учебу!', reply_markup=first_button)
+
+async def start_command(message: Message, state: FSMContext):
+    user = await users.get_user_by_id(message.from_user.id)
+    await message.answer(
+        f'Привет, <b>{user.username}</b>! 👋 \nВыбери действие ниже ⤵️',
+        reply_markup=start_keyboard, parse_mode=ParseMode.HTML)

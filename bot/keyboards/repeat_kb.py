@@ -3,15 +3,15 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 repeat_kb = ReplyKeyboardMarkup(keyboard=[
     [
         KeyboardButton(
-            text='Закрепить новые слова'
+            text='🧠 Закрепить новые слова'
         )
     ], [
         KeyboardButton(
-            text='Повторить старые слова'
+            text='🗓️ Повторить старые слова'
         )
     ], [
         KeyboardButton(
-            text='Назад'
+            text='⏪ Назад'
         )
     ]
 ], resize_keyboard=True)

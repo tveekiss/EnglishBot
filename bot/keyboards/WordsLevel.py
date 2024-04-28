@@ -1,31 +1,40 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
+emoji = {
+    'A1': '👶🏻',
+    'A2': '🥱',
+    'B1': '💡',
+    'B2': '💪🏻',
+    'C1': '🔥',
+    'C2': '😈'
+}
+
 level_kb = ReplyKeyboardMarkup(keyboard=[
     [
         KeyboardButton(
-            text='a1'
+            text=f'{emoji["A1"]} A1'
         ),
         KeyboardButton(
-            text='a2'
+            text=f'{emoji["A2"]} A2'
         )
     ], [
         KeyboardButton(
-            text='b1'
+            text=f'{emoji["B1"]} B1'
         ),
         KeyboardButton(
-            text='b2'
+            text=f'{emoji["B2"]} B2'
         )
     ], [
         KeyboardButton(
-            text='c1'
+            text=f'{emoji["C1"]} C1'
         ),
         KeyboardButton(
-            text='c2'
+            text=f'{emoji["C2"]} C2'
         )
     ], [
         KeyboardButton(
-            text='Назад'
+            text='⏪ Назад'
         )
     ]
 ], resize_keyboard=True)
-levels = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2']
+

@@ -1,105 +1,87 @@
 from aiogram.types import Message
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from aiogram.enums import ParseMode
 
 from bot.keyboards import level_kb, create_kb, start_keyboard
 
-
-from bot.education.classes import Words
-from bot.database import WordsDb
-
-
-class Level(StatesGroup):
-    level = State()
+from bot.database import words
 
 
 class Test(StatesGroup):
     answer = State()
+    level = State()
 
 
 async def starting(message: Message, state: FSMContext):
-    db = WordsDb(message.from_user.id)
-    if len(db.get_repeat_list()) >= 15:
-        await message.answer('У вас накопилось много слов на повторение,'
-                             ' закрепите материал', reply_markup=start_keyboard)
-        return
-    await message.answer('Хорошо, я буду отправлять тебе слова на английском языке,'
-                         ' а ты должен(а) будешь выбрать правильный вариант снизу, вот так все просто!'
-                         ' Слова, в которых ты допустишь ошибку, я добавлю в повторение, '
-                         'что бы в будущем смог их снова повторить и отточить свои навыки!')
+    await message.answer('🌟📚 Прекрасно! Я буду отправлять тебе слова на английском языке,'
+                         ' а ты просто выберешь правильный вариант снизу. 🤗 Ничего сложного!'
+                         ' Если где-то ошибешься, не беда - я добавлю это слово в повторение,'
+                         ' чтобы ты мог его потом отточить и стать еще лучше! 💪🚀')
     await message.answer("""
-Но для начала, выбери уровень английских слов:
+Но для начала, выбери уровень английских слов: 🌟
 
 По европейской классификации выделяются три основных типа: 
-начинающий, средний и продвинутый (Basic, Independent, Proficient).
 
-Эти уровни английского языка делятся еще на две категории.
+1️⃣ <b>Basic</b> (начинающий)
+2️⃣ <b>Independent</b> (средний)
+3️⃣ <b>Proficient</b> (продвинутый)
+
+
+Эти уровни английского языка делятся еще на две категории. 📚
 
 Таким образом получается 6 уровней:
-A1 (Elementary) — базовый;
-A2 (Pre Intermediate) — хороший базовый;
-B1 (Intermediate) — средний;
-B2 (Upper Intermediate) — хороший средний;
-C1 (Advanced) — высокий;
-C2 (Proficiency) — самый высокий, уровень носителя.
-                         """, reply_markup=level_kb)
-    await state.set_state(Level.level)
+👶🏻 <b>A1</b> (Elementary) — базовый;
+🥱 <b>A2</b> (Pre Intermediate) — хороший базовый;
+💡 <b>B1</b> (Intermediate) — средний;
+💪🏻 <b>B2</b> (Upper Intermediate) — хороший средний;
+🔥 <b>C1</b> (Advanced) — высокий;
+😈 <b>C2</b> (Proficiency) — самый высокий, уровень носителя.
+                         """, reply_markup=level_kb, parse_mode=ParseMode.HTML)
+    await state.set_state(Test.level)
 
 
-async def learning(message: Message, state: FSMContext):
-    await message.answer('Отличный выбор! Теперь я буду давать тебе слова на английском языке,'
-                         ' а ты будешь пытаться их переводить')
-    await state.update_data(level=message.text)
-    db = WordsDb(message.from_user.id)
-    words = Words(message.text, message.from_user.id)
-    await state.update_data(words=words, db=db)
-    eng, rus, answers = words.random_word()
-    await state.update_data(rus=rus, eng=eng)
+async def introduction(message: Message, state: FSMContext):
+    await message.answer('Отлично! 🌟 Приготовься к веселому испытанию! 📚🎉'
+                         ' Я буду предлагать тебе английские слова, а ты попробуешь их перевести.'
+                         ' Готов начать? 💬💡')
+    await state.update_data(level=message.text.lower())
     await testing(message, state)
 
 
 async def testing(message: Message, state: FSMContext):
     context_data = await state.get_data()
-    level = context_data.get('level')
-    cl_words: Words = context_data.get('words')
-    user_words: WordsDb = context_data.get('db')
-    if len(user_words.get_repeat_list()) >= 15:
-        await message.answer('У вас накопилось много слов на повторение,'
-                             ' закрепите материал', reply_markup=start_keyboard)
-        return
-    eng, rus, answers = cl_words.random_word()
-    if user_words.check_word(eng, rus):
-        await testing(message, state)
-        return
-    await state.update_data(rus=rus, eng=eng, answers=answers)
-    kb = create_kb(answers, 0)
-    await message.answer(f'Как переводится слово: {eng}?', reply_markup=kb)
+    word_id, answers = await words.random_word(message.from_user.id, level=context_data['level'])
+    word = await words.get_word_by_id(word_id)
+    print(word)
+    print(answers)
+    await state.update_data(answers=answers, word=word.id)
+    await message.answer(f'Как переводится слово <b>{word.eng}</b> ?', reply_markup=create_kb(answers, 0),
+                         parse_mode=ParseMode.HTML)
     await state.set_state(Test.answer)
 
 
 async def result(message: Message, state: FSMContext):
-    repeat = 1
     context_data = await state.get_data()
-    rus = context_data.get('rus')
-    answers = context_data.get('answers')
-    if message.text == 'Закончить обучение':
+    repeat = None
+    answers = context_data['answers']
+    word = await words.get_word_by_id(context_data['word'])
+    print(answers)
+    if message.text == '⏪ Закончить обучение':
+        await message.answer('✨ Заканчиваю ✨', reply_markup=start_keyboard)
+        await message.answer('Выбери действие снизу ⤵️')
         await state.clear()
-        await message.answer('Заканчиваю. Не хотите повторить слова?', reply_markup=start_keyboard)
         return
-    if message.text == rus:
-        await message.answer('Правильный ответ')
+    if message.text == word.rus:
+        repeat = 1
+        await message.answer('✅ Правильно ')
     elif message.text in answers:
-        await message.answer(f"Неправильно. Правильный ответ - {rus}. \n"
-                             f"Запишу на повторение")
         repeat = 2
+        await message.answer(f'❌ Неверно, правильный ответ: <b>{word.rus}</b> ', parse_mode=ParseMode.HTML)
     else:
-        await message.answer('Нет такого варианта ответа!')
+        await message.answer('❗️ Нет такого варианта ответа!')
         await state.set_state(Test.answer)
         return
 
-    db: WordsDb = context_data.get('db')
-    level = context_data.get('level')
-    eng = context_data.get('eng')
-    db.insert_word(level, eng, rus, repeat)
+    await words.add_word(message.from_user.id, context_data['word'], repeat)
     await testing(message, state)
-

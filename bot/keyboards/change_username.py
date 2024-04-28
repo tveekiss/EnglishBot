@@ -1,9 +1,9 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-stat_keyboard = ReplyKeyboardMarkup(keyboard=[
+username_kb = ReplyKeyboardMarkup(keyboard=[
     [
         KeyboardButton(
-            text='📋 Посмотреть базу выученных слов'
+            text='Использовать имя из telegram 🪄'
         )
     ], [
         KeyboardButton(
