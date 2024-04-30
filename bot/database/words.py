@@ -91,12 +91,11 @@ async def edit_repeat(tg_id, word_id, repeat):
     async with async_session() as session:
         user = await users.get_user_by_id(tg_id)
         word = await get_word_by_id(word_id)
-        res_repeat = await session.execute(select(UserWords.repeat)
-                                           .where((UserWords.word == word) & (UserWords.user == user)))
-        res_repeat = res_repeat.scalar()
-        print(res_repeat)
-        await session.execute(update(UserWords).where((UserWords.word == word) & (UserWords.user == user))
-                              .values(repeat=res_repeat + repeat))
+        link = await session.scalar(select(UserWords)
+                                    .where((UserWords.word == word) & (UserWords.user == user)))
+        print(link)
+        link.repeat += repeat
+        session.add(link)
         await session.commit()
 
 

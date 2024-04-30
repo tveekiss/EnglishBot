@@ -25,7 +25,9 @@ async def add_user(tg_id, username):
 
 async def edit_username(tg_id, username):
     async with async_session() as session:
-        await session.execute(update(Users).where(Users.telegram_id == tg_id).values(username=username))
+        user = await get_user_by_id(tg_id)
+        user.username = username
+        session.add(user)
         await session.commit()
 
 

@@ -105,7 +105,7 @@ async def help_command(message: Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
     await message.answer('''
 Привет! 🌟
-Давай, я покажу на что ты способен! 💪🏼
+Давай, я покажу на что способен! 💪🏼
 Выбери ниже, какую мою функцию ты хочешь узнать больше: 🔍🧠
     ''', reply_markup=keyboard)
 
