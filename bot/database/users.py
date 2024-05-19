@@ -72,18 +72,3 @@ async def get_statistics(tg_id):
         text += f'\n🌟 Выучено за сегодня: <b>{today}</b>\n'
         return text
 
-
-async def get_old_list(tg_id):
-    user = await get_user_by_id(tg_id)
-    async with async_session() as session:
-        words_list = await session.execute(select(UserWords)
-                                           .where((UserWords.user_id == user.id) & (UserWords.repeat == 0))
-                                           .order_by(UserWords.date.desc()))
-        words_list = words_list.scalars().unique().all()
-        result_list = []
-        for word in words_list:
-            result_list.append([word.word.difficulty, word.word.rus, word.word.eng, word.date])
-        return result_list
-
-
-

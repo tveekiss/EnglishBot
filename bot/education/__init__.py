@@ -1,10 +1,10 @@
-__all__ = ['register_education_handlers', 'starting', 'repeat_new', 'repeat_old', 'statistic', 'old_statistics']
+__all__ = ['register_education_handlers', 'starting', 'repeat_new', 'repeat_old', 'statistic']
 
 from bot.education.learn import starting, introduction, Test, result
 from aiogram import Router
 from bot.education.repeat import repeat_new, result_repeat, Repeat
 from bot.education.repeat_old import repeat_old, RepeatOld, result_old
-from bot.education.statistic import statistic, old_statistics
+from bot.education.statistic import statistic
 
 
 def register_education_handlers(router: Router):

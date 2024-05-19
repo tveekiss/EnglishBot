@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from bot.database.db import async_session, Users, Words, UserWords
 from bot.database import users
@@ -95,6 +96,8 @@ async def edit_repeat(tg_id, word_id, repeat):
                                     .where((UserWords.word == word) & (UserWords.user == user)))
         print(link)
         link.repeat += repeat
+        if link.repeat == 0:
+            link.date = datetime.strftime(datetime.now(), '%d.%m.%Y')
         session.add(link)
         await session.commit()
 
