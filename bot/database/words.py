@@ -110,3 +110,19 @@ async def repeat_old_list(tg_id):
         random.shuffle(words_list)
         result_list = [word.word.id for word in words_list]
         return result_list
+
+
+async def len_learn_words(tg_id):
+    async with async_session() as session:
+        user = await users.get_user_by_id(tg_id)
+        words_list = await session.execute(select(UserWords).where((UserWords.user == user) & (UserWords.repeat > 0)))
+        words_list = words_list.scalars().unique().all()
+        print(len(words_list))
+        return len(words_list)
+
+
+async def get_repeat(word_id, tg_id):
+    async with async_session() as session:
+        user = await users.get_user_by_id(tg_id)
+        link = await session.scalar(select(UserWords).where((UserWords.user == user) & (UserWords.word_id == word_id)))
+        return link.repeat

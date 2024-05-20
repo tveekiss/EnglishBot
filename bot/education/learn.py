@@ -14,6 +14,10 @@ class Test(StatesGroup):
 
 
 async def starting(message: Message, state: FSMContext):
+    if await words.len_learn_words(message.from_user.id) > 15:
+        await message.answer('У вас в очереди на закрепление больше 15 слов 🙁\n'
+                             'Закрепите слова в повторении 🧠')
+        return
     await message.answer('🌟📚 Прекрасно! Я буду отправлять тебе слова на английском языке,'
                          ' а ты просто выберешь правильный вариант снизу. 🤗 Ничего сложного!'
                          ' Если где-то ошибешься, не беда - я добавлю это слово в повторение,'
@@ -50,6 +54,11 @@ async def introduction(message: Message, state: FSMContext):
 
 
 async def testing(message: Message, state: FSMContext):
+    if await words.len_learn_words(message.from_user.id) > 15:
+        await message.answer('У вас в очереди на закрепление больше 15 слов 🙁\n'
+                             'Закрепите слова в повторении 🧠', reply_markup=start_keyboard)
+        await state.clear()
+        return
     context_data = await state.get_data()
     word_id, answers = await words.random_word(message.from_user.id, level=context_data['level'])
     word = await words.get_word_by_id(word_id)
