@@ -14,8 +14,8 @@ class Test(StatesGroup):
 
 
 async def starting(message: Message, state: FSMContext):
-    if await words.len_learn_words(message.from_user.id) > 15:
-        await message.answer('У вас в очереди на закрепление больше 15 слов 🙁\n'
+    if await words.len_learn_words(message.from_user.id) >= 15:
+        await message.answer('У вас в очереди на закрепление 15 слов 🙁\n'
                              'Закрепите слова в повторении 🧠')
         return
     await message.answer('🌟📚 Прекрасно! Я буду отправлять тебе слова на английском языке,'
@@ -54,8 +54,8 @@ async def introduction(message: Message, state: FSMContext):
 
 
 async def testing(message: Message, state: FSMContext):
-    if await words.len_learn_words(message.from_user.id) > 15:
-        await message.answer('У вас в очереди на закрепление больше 15 слов 🙁\n'
+    if await words.len_learn_words(message.from_user.id) >= 15:
+        await message.answer('У вас в очереди на закрепление 15 слов 🙁\n'
                              'Закрепите слова в повторении 🧠', reply_markup=start_keyboard)
         await state.clear()
         return
