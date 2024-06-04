@@ -10,7 +10,7 @@ from bot.database.db import Base, engine
 from bot.middlewaries import RegisterCheckMiddleware
 
 dp = Dispatcher()
-bot = Bot(token='Write your bot token here')
+bot = Bot(token='6961090140:AAE6McwZa2SIqODuEO0F1KjvIyvXkseQ5UI')
 
 
 async def main():

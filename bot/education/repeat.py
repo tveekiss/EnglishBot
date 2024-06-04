@@ -14,7 +14,7 @@ class Repeat(StatesGroup):
 
 async def repeat_new(message: Message, state: FSMContext):
     if not await words.check_repeat(message.from_user.id):
-        await message.answer('Нету слов на повторение ️️🙁')
+        await message.answer('Нет слов на повторение ️️🙁')
         return
     await message.answer('📚✨ Привет! В разделе "Закрепление новых слов" ты можешь закрепить слова,'
                          ' которые уже выучил. Если сделал ошибку, повтори слово дважды,'
@@ -34,8 +34,8 @@ async def testing_repeat(message: Message, state: FSMContext):
         return
     word = await words.get_word_by_id(word_id)
     repeat = await words.get_repeat(word_id, message.from_user.id)
-    await message.answer(f'Как переводится слово <b>{word.eng}</b> ?\n'
-                         f'Повторений: <b>{repeat}</b>', reply_markup=create_kb(answers, 1),
+    await message.answer(f'Как переводится слово <b>{word.eng}</b> ?\n\n'
+                         f'Повторений для закрепления осталось: <b>{repeat}</b>', reply_markup=create_kb(answers, 1),
                          parse_mode=ParseMode.HTML)
     await state.update_data(word_id=word_id, answers=answers)
     await state.set_state(Repeat.answer)
